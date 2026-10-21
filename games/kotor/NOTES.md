@@ -458,3 +458,25 @@ Note: pass `-GamePath` and `-BinDir` as **absolute** paths. The harness hands th
 `Start-Process`, and a relative path resolved against the harness's own working directory
 fails with the control ports never opening (`RESULT: FAIL`), which reads as a real
 failure but is only a bad path.
+
+### Two traps hit while publishing (worth knowing for any repo)
+
+**`>` in PowerShell 5.1 writes UTF-16.** Piping a command into a file
+(`git cat-file blob <sha> > f.ps1`) re-encodes the bytes as UTF-16LE with a BOM. The file
+looks doubled in size and fails any hash check. It cost real time here: it made a
+correctly-stored blob look like a UTF-16 blob in the git object database, when the index
+and the committed object were both fine all along. To capture a command's real bytes use
+`cmd /c "tool > file"`, or read and write with Python. Never trust `>` when a hash is
+involved.
+
+**The source file was double-encoded, not just displayed wrongly.** This note file had 37
+em dashes, arrows, ellipses, the trademark sign and the section sign written as mojibake
+from the moment it was created - a UTF-8 file decoded as cp1252 and re-encoded once. The
+tell is byte-level, not visual: an em dash should be `E2 80 94`, and the mojibake form is
+`C3 A2 E2 82 AC E2 80 9D`; check that the whole file decodes as strict UTF-8 with no
+`U+FFFD`. Git itself is happy to store this; only a reader notices. The harness was never
+affected (it is ASCII plus a few box-drawing comments).
+
+Also worth recording: pushing to the hub needs the **fork** remote
+(`git push fork game/kotor`), not `origin` - `origin` is `cranebeaker/coop-anything`, where
+this account has read-only access, so a push there fails with HTTP 403.
