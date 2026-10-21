@@ -3,10 +3,10 @@
 | | |
 |---|---|
 | Engine | reone (open-source engine reimplementation), forked |
-| Versions tested | Steam (app 32370), `swkotor.exe` v1.0.3.0, buildid 4143502, on Windows 11 x64 |
+| Versions tested | Steam (app 32370), `swkotor.exe` v1.0.3.0, buildid 4143502, on Windows x64 |
 | Projects | [KotOR co-op](https://github.com/McChaffeeFAF/kotor-coop) (reone fork) - directory entry |
 | QA level | automated |
-| Last updated | 2026-10-20 |
+| Last updated | 2026-10-21 |
 
 ## Where things stand
 
@@ -19,6 +19,12 @@ This is a fork of [reone](https://github.com/seedhartha/reone), the free engine
 reimplementation for KotOR and KotOR II. The upstream reone is single-player; the fork
 adds the co-op layer. The fork is source-only: no GitHub releases, no CI, and it has to
 be built with Visual Studio and vcpkg.
+
+**Whose fork it is.** [McChaffeeFAF/kotor-coop](https://github.com/McChaffeeFAF/kotor-coop)
+is **not** ours — it is McChaffeeFAF's project, which we found and tested. We only fixed
+two bugs in its packaging scripts and sent those fixes back to it; see
+[What we changed](#what-we-changed). The engine and the co-op layer are McChaffeeFAF's
+work, themselves descended from seedhartha's reone.
 
 ## Existing work
 
@@ -60,7 +66,10 @@ issues. A build from source is required.
 
 ## What we changed
 
-In the fork:
+Two bugs in the fork's packaging scripts, fixed and **committed on branch `fix/packaging`
+of our fork of the project** (commits `134f062` and `8b6ab99`, on top of `d2bc73b` =
+alpha-0.4.0). They are not merged into the fork's `main` yet, so a fresh clone of `main`
+still shows both bugs:
 
 1. **The package shipped the wrong VC++ runtime and crashed on startup.** Root cause: the
    packaging script searched Visual Studio installs for a `Microsoft.VC*.CRT` redist
@@ -71,7 +80,7 @@ In the fork:
    (`boost_program_options-vc145-...`), select that CRT, warn on a mismatch. Test: the
    packaged engine now runs; the zip's fresh-extracted engine hosts a session.
 2. **The launcher refused to start without KotOR II.** Root cause: readiness required
-   *both* games, so a KotOR-1-only owner got all of Host / Join / solo **disabled** -
+   *both* games, so a KotOR-1-only player got all of Host / Join / solo **disabled** -
    even Play solo - though KotOR-1-only works at the engine level. Fix (Windows
    `launcher.ps1`/`setup.ps1`, Linux `setup.sh`): KotOR II is optional; readiness keys on
    KotOR 1; the HUD follows what is installed. Test: a synthetic first-run with no KotOR
@@ -81,11 +90,15 @@ Nothing in the retail install or its saves was touched; all testing ran against 
 
 ## QA
 
-- **Two-client suite:** `test/harness.ps1` drives a host and a guest through the control
-  ports and asserts shared state. **77 gates**, `RESULT: PASS` on two consecutive runs
-  (2026-10-20). It covers join/module/movement, dialogue, wallet, containers, level-up,
-  combat, area transitions, pause propagation, a guest opening a door in reach, and the
-  area-exit ready-check.
+- **Two-client suite:** `games/kotor/test/harness.ps1` (published with this write-up). It
+  starts two real engine clients on one PC (host and guest, both headless), connects them
+  over localhost UDP, drives both through their TCP control ports and asserts the shared
+  state on **both** seats. Run it with
+  `powershell -ExecutionPolicy Bypass -File harness.ps1` (parameters: `-GamePath`,
+  `-BinDir`, ports). **77 gates**, `RESULT: PASS` on two consecutive runs (2026-10-20).
+  It covers join/module/movement, dialogue, wallet, containers, level-up, combat, area
+  transitions, pause propagation, a guest opening a door in reach, and the area-exit
+  ready-check.
 - **Unit tests:** 3,650 tests / 526 suites - 3,639 passed, 0 failed, 11 skipped.
 - **Packaging:** the Linux launcher harness 32/32; a full **host->join from the built
   package: 9/9** checks - both packaged clients in `end_m01aa`, replication clean
@@ -94,8 +107,6 @@ Nothing in the retail install or its saves was touched; all testing ran against 
   / character generation are not reachable from the control port without a scripted
   merchant/bench or a different session mode. They are recorded, not claimed.
 
-The suite is not in the fork; it lives with the working notes.
-
 ## How to play
 
 1. Build the fork from source (Visual Studio + vcpkg; `-G "Visual Studio 18 2026"`).
@@ -103,14 +114,17 @@ The suite is not in the fork; it lives with the working notes.
 2. Package it with `tools/package/make_tester_package.ps1`; the player runs
    **Play KotOR Co-op.cmd** and picks Host or Join. The launcher finds the installs
    itself.
-3. Host: coincides with the story as usual and shares their IP:port; the friend joins
-   with `--join ip:port`. Or set up the join-code service for short codes.
+3. Host: hosts from the launcher and shares their IP:port; the friend joins with
+   `--join ip:port`. Or set up the join-code service for short codes.
 4. KotOR II is optional; without it the game plays KotOR 1 with the KotOR HUD.
 
 ## Known issues
 
 - **Alpha.** Expect unfinished screens and rough edges.
 - **Source-only.** No binaries; a developer toolchain is needed to play.
+- **Unreleased fixes.** Two packaging bugs are fixed on branch `fix/packaging` but not
+  yet merged into the fork; until then a fresh clone still crashes on startup and still
+  demands KotOR II.
 - **Companion-gated screens.** During a conversation the host answers guest commands
   `busy` - by design (the host leads dialogue), but it means a guest cannot act mid-scene.
 - **A guest's action is accepted even when it cannot be carried out** - e.g. a door out of
@@ -124,5 +138,5 @@ The suite is not in the fork; it lives with the working notes.
   Free Mode session).
 - A verified co-op **playthrough** would move QA from `automated` to
   `verified-playthrough`; nobody has finished the campaign in co-op.
-- The two packaging fixes above are in the fork's working tree, not yet committed or
-  pushed upstream to the fork.
+- Get the two packaging fixes reviewed and merged in the fork; they are on branch
+  `fix/packaging` (and mirrored in this PR), not on the fork's `main`.

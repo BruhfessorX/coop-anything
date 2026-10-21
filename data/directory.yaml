@@ -1857,7 +1857,7 @@
   status: alpha
   coop_scope:
     players_visible: yes
-    story: yes
+    story: partial
     enemies: yes
     world_state: yes
     items: shared
@@ -1869,10 +1869,13 @@
   notes: GPL-3.0 fork of reone (the seedhartha engine reimplementation) adding online co-op to the KotOR
     1 campaign. alpha-0.4.0, 2026-10-15. Story Mode has a host run the story and guests take the party's
     companions; Free Mode lets guests bring their own characters. Host runs the authoritative simulation and
-    guests send intent; the campaign, enemies and world state are shared. Also needs a join-code service for
-    short codes (direct ip:port works without one). KotOR II's install is optional - it supplies the KotOR II
+    guests send intent; the campaign, enemies and world state are shared, though store, workbench, minigame
+    and Free Mode/chargen flows are not yet gated, so the story scope is partial. Optional join-code service
+    for short codes (direct ip:port works without one). KotOR II's install is optional - it supplies the KotOR II
     interface and systems, but the game plays KotOR 1 with the KotOR HUD without it. Verified 2 clients over
-    direct-ip with a 77-gate scripted suite (see games/kotor). Source-only, no releases, builds from source.
+    direct-ip with a 77-gate scripted suite, published alongside this write-up. Two packaging fixes (wrong
+    VC++ runtime; KotOR II treated as required) are on a branch, not yet merged in the fork.
+    Source-only, no releases, builds from source.
   sources:
   - https://github.com/McChaffeeFAF/kotor-coop
   - https://github.com/seedhartha/reone
