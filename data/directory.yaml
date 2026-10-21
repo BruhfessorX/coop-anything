@@ -1874,8 +1874,8 @@
     for short codes (direct ip:port works without one). KotOR II's install is optional - it supplies the KotOR II
     interface and systems, but the game plays KotOR 1 with the KotOR HUD without it. Verified 2 clients over
     direct-ip with a 77-gate scripted suite, published alongside this write-up. Two packaging fixes (wrong
-    VC++ runtime; KotOR II treated as required) are on a branch, not yet merged in the fork.
-    Source-only, no releases, builds from source.
+    VC++ runtime; KotOR II treated as required) are an open pull request to the fork
+    (McChaffeeFAF/kotor-coop#1), not yet merged. Source-only, no releases, builds from source.
   sources:
   - https://github.com/McChaffeeFAF/kotor-coop
   - https://github.com/seedhartha/reone

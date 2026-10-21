@@ -66,10 +66,11 @@ issues. A build from source is required.
 
 ## What we changed
 
-Two bugs in the fork's packaging scripts, fixed and **committed on branch `fix/packaging`
-of our fork of the project** (commits `134f062` and `8b6ab99`, on top of `d2bc73b` =
-alpha-0.4.0). They are not merged into the fork's `main` yet, so a fresh clone of `main`
-still shows both bugs:
+Two bugs in the fork's packaging scripts, fixed, **pushed to our fork of the project and
+opened as a PR to the fork**: [McChaffeeFAF/kotor-coop#1](https://github.com/McChaffeeFAF/kotor-coop/pull/1)
+(commits `4ec25f9` and `5d45c38`, rebased on `c56a05e` = alpha-0.4.4). The PR carries the
+branch and the diff; until it is merged, a fresh clone of the fork's `main` still shows
+both bugs:
 
 1. **The package shipped the wrong VC++ runtime and crashed on startup.** Root cause: the
    packaging script searched Visual Studio installs for a `Microsoft.VC*.CRT` redist
@@ -122,8 +123,9 @@ Nothing in the retail install or its saves was touched; all testing ran against 
 
 - **Alpha.** Expect unfinished screens and rough edges.
 - **Source-only.** No binaries; a developer toolchain is needed to play.
-- **Unreleased fixes.** Two packaging bugs are fixed on branch `fix/packaging` but not
-  yet merged into the fork; until then a fresh clone still crashes on startup and still
+- **Unreleased fixes.** Two packaging bugs are fixed on
+  [PR #1 to the fork](https://github.com/McChaffeeFAF/kotor-coop/pull/1) but not merged
+  yet; until they land, a fresh clone of the fork still crashes on startup and still
   demands KotOR II.
 - **Companion-gated screens.** During a conversation the host answers guest commands
   `busy` - by design (the host leads dialogue), but it means a guest cannot act mid-scene.
@@ -138,5 +140,5 @@ Nothing in the retail install or its saves was touched; all testing ran against 
   Free Mode session).
 - A verified co-op **playthrough** would move QA from `automated` to
   `verified-playthrough`; nobody has finished the campaign in co-op.
-- Get the two packaging fixes reviewed and merged in the fork; they are on branch
-  `fix/packaging` (and mirrored in this PR), not on the fork's `main`.
+- Get [the two packaging fixes](https://github.com/McChaffeeFAF/kotor-coop/pull/1)
+  reviewed and merged in the fork; they are an open PR, not on the fork's `main`.
